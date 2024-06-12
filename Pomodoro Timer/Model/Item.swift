@@ -9,10 +9,12 @@ import Foundation
 import SwiftData
 
 @Model
-final class Item : ObservableObject, Hashable{
+final class Item : Identifiable, ObservableObject, Hashable{
     var timestamp: Date
     @Attribute var name: String
     static let defaultNamePrefix = "Timer"
+    
+    let id = UUID()
     
     var workTime: Int
     var shortBreakTime:Int
@@ -20,19 +22,29 @@ final class Item : ObservableObject, Hashable{
     var cycle: Int
     var breakArray: [TimeInterval]
     var editHistory:[String]
-    var displayOrder: Int
-    var notes: String
+    var order: Int
+    var workNotes: String
+    var shortBreakNotes: String
+    var longBreakNotes: String
     
-    init(timestamp: Date = .now, nameSuffix: Int, displayOrder: Int, notes: String = "") {
+    init(timestamp: Date = .now, nameSuffix: Int, order: Int, notes: String = "") {
         self.timestamp = timestamp
         self.name = "\(Item.defaultNamePrefix)\(nameSuffix)"
-        self.workTime = 25
-        self.shortBreakTime = 5
-        self.longBreakTime = 25
+        self.workTime = 25*60
+        self.shortBreakTime = 5*60
+        self.longBreakTime = 25*60
         self.cycle = 4
         self.breakArray = []
         self.editHistory = []
-        self.displayOrder = displayOrder
-        self.notes = notes
+        self.order = order
+        self.workNotes = notes
+        self.shortBreakNotes = ""
+        self.longBreakNotes = ""
+    }
+    
+    func changeTimeForTest(){
+        self.workTime = 1
+        self.shortBreakTime = 2
+        self.longBreakTime = 3
     }
 }

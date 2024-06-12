@@ -35,7 +35,7 @@ struct PomodoroTimerEditView: View {
                         Text("Work")
                         Picker(selection: $item.workTime, label: Text("Work Time")) {
                             ForEach(workTimeOptions, id: \.self) { index in
-                                Text("\(index)").tag(index)
+                                Text("\(index)").tag(index*60)
                             }
                         }
                         .pickerStyle(pickerStyle)
@@ -44,7 +44,7 @@ struct PomodoroTimerEditView: View {
                         Text("Short Break")
                         Picker(selection: $item.shortBreakTime, label: Text("Short Break Time")) {
                             ForEach(shortBreakTimeOptions, id: \.self) { index in
-                                Text("\(index)").tag(index)
+                                Text("\(index)").tag(index*60)
                             }
                         }
                         .pickerStyle(pickerStyle)
@@ -53,14 +53,20 @@ struct PomodoroTimerEditView: View {
                         Text("Long Break")
                         Picker(selection: $item.longBreakTime, label: Text("Long Break Time")) {
                             ForEach(longBreakTimeOptions, id: \.self) { index in
-                                Text("\(index)").tag(index)
+                                Text("\(index)").tag(index*60)
                             }
                         }.pickerStyle(pickerStyle)
                     }
                 }
             })
-            Section("Notes", content: {
-                TextEditor(text: $item.notes)
+            Section("Work Notes", content: {
+                TextEditor(text: $item.workNotes)
+            })
+            Section("Short Break Notes", content: {
+                TextEditor(text: $item.shortBreakNotes)
+            })
+            Section("Long Break Notes", content: {
+                TextEditor(text: $item.longBreakNotes)
             })
         }
     }

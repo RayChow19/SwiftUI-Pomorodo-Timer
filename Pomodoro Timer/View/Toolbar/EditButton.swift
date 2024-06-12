@@ -1,13 +1,6 @@
-//
-//  EditButton.swift
-//  Pomodoro Timer
-//
-//  Created by Ray Chow on 19/4/2024.
-//
-
 import SwiftUI
 
-struct EditButton: View {
+struct myEditButton: View {
     var action: () -> Void
     var body: some View {
         Button(action: action) {
@@ -21,5 +14,5 @@ struct EditButton: View {
 }
 
 #Preview {
-    EditButton(action: {})
+    myEditButton(action: {})
 }

@@ -10,7 +10,9 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query(sort:\Item.order) private var items: [Item]
+    var timerVM: TimerVM?
+    @State private var multiSelection = Set<UUID>()
 
     var body: some View {
         NavigationSplitView {
@@ -23,6 +25,9 @@ struct ContentView: View {
                     }
                 }
                 .onDelete(perform: deleteItems)
+                .onMove(perform: { indices, newOffset in
+                    move(from:indices, to:newOffset)
+                })
             }
 #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
@@ -30,9 +35,7 @@ struct ContentView: View {
             .toolbar {
 #if os(iOS)
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton {
-                        
-                    }
+                    EditButton()
                 }
 #endif
                 ToolbarItem {
@@ -53,15 +56,14 @@ struct ContentView: View {
     }
     
     private func addFirstItem() {
-        withAnimation {
-            let newItem = Item(nameSuffix:getNextSuffix(), displayOrder: items.count, notes: "notes")
-            modelContext.insert(newItem)
-        }
+        let newItem = Item(nameSuffix:getNextSuffix(), order: items.count, notes: "notes")
+        newItem.changeTimeForTest()
+        modelContext.insert(newItem)
     }
 
     private func addItem() {
         withAnimation {
-            let newItem = Item(nameSuffix:getNextSuffix(), displayOrder: items.count)
+            let newItem = Item(nameSuffix:getNextSuffix(), order: items.count)
             modelContext.insert(newItem)
         }
     }
@@ -89,6 +91,20 @@ struct ContentView: View {
             for index in offsets {
                 modelContext.delete(items[index])
             }
+        }
+    }
+    
+    func move(from source: IndexSet, to destination: Int) {
+        var revisedItems: [Item] = items.sorted(by: { $0.order < $1.order })
+        revisedItems.move(fromOffsets: source, toOffset: destination)
+        for reverseIndex in stride(from: revisedItems.count - 1, through: 0, by: -1) {
+            revisedItems[reverseIndex].order = reverseIndex
+        }
+        do {
+            try modelContext.save()
+        } catch {
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
         }
     }
 }
